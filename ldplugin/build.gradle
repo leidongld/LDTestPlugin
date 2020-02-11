@@ -1,0 +1,26 @@
+apply plugin: 'java-library'
+apply plugin: 'maven'
+apply plugin: 'groovy'
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation gradleApi()
+    implementation localGroovy()
+    implementation 'com.android.tools.build:transform-api:1.5.0'
+    implementation 'com.android.tools.build:gradle:3.5.3'
+}
+
+sourceCompatibility = "7"
+targetCompatibility = "7"
+
+group 'com.example.leidong'
+version '1.0.0'
+
+uploadArchives {
+    repositories.mavenDeployer {
+        pom.version = '1.0.0'
+        pom.groupId = 'com.plugin'
+        pom.artifactId = 'ldplugin'
+        repository(url: uri('../repo'))
+    }
+}
