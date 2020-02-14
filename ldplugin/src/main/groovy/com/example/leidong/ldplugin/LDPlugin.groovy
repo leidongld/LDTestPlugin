@@ -3,6 +3,7 @@ package com.example.leidong.ldplugin
 
 import com.example.leidong.ldplugin.beans.TaskTimeBean
 import com.example.leidong.ldplugin.extensions.LDExtension
+import com.example.leidong.ldplugin.tasks.DependencyCheckTask
 import com.example.leidong.ldplugin.tasks.LDTask
 import com.example.leidong.ldplugin.utils.LogUtils
 import org.gradle.BuildListener
@@ -14,6 +15,7 @@ import org.gradle.api.execution.TaskExecutionListener
 import org.gradle.api.initialization.Settings
 import org.gradle.api.invocation.Gradle
 import org.gradle.api.tasks.TaskState
+
 /**
  * 雷栋的自定义插件
  */
@@ -21,12 +23,15 @@ class LDPlugin implements Plugin<Project> {
     private Project project
     private FunctionType type
 
-    private LDExtension ldExtension
+//    private LDExtension ldExtension
 
     enum FunctionType {
         testLifeCycle,
         testExtensionAndTask,
-        testListener
+        testListener,
+        testDependencyCheck,
+        testProjectApi,
+        testGetProperty
     }
 
     @Override
@@ -44,11 +49,66 @@ class LDPlugin implements Plugin<Project> {
             case FunctionType.testListener:
                 testListener()
                 break
+            case FunctionType.testDependencyCheck:
+                testDependencyCheck()
+                break
+            case FunctionType.testProjectApi:
+                testProjectApi()
+                break
+            case FunctionType.testGetProperty:
+                testGetProperty()
+                break
             default:
                 break
         }
 
         LogUtils.printTitle("LDPlugin End")
+    }
+
+    /**
+     * 获取gradle.properties中的自定义参数
+     *
+     * @return
+     */
+    def testGetProperty() {
+        Properties properties = new Properties()
+        properties.load(project.getRootProject().file('gradle.properties').newInputStream())
+        def includeModuleA = properties.getProperty("includeModuleA")
+        println("includeModuleA:" + includeModuleA)
+
+        println "includeModuleA:${project.getRootProject().getProperties().get("includeModuleA")}"
+    }
+
+    /**
+     * 测试Project的一些API
+     */
+    def testProjectApi() {
+        // 切换到Root Project遍历所有的Project
+        println "输出所有的project信息"
+        project.getRootProject().getAllprojects().eachWithIndex { Project pro, int index ->
+            if (0 == index) {
+                println "Root Project:" + pro
+            } else {
+                println "子Project：" + pro
+            }
+        }
+
+        // 根据名称获取指定的project
+        project.getRootProject().project("app") { Project pro ->
+            println(pro.name)
+        }
+
+        // 获取RootDir 获取BuildDir
+        println("rootDir = ") + project.getRootProject().getRootDir().getAbsolutePath()
+        println("buildDir = " + project.getBuildDir().getAbsolutePath())
+
+        // 对所有Project进行配置
+        project.getRootProject().allprojects {
+            println "hahaha"
+        }
+
+
+        //
     }
 
     /**
@@ -59,7 +119,7 @@ class LDPlugin implements Plugin<Project> {
      */
     def init(Project project) {
         this.project = project
-        this.type = FunctionType.testListener
+        this.type = FunctionType.testExtensionAndTask
     }
 
     /**
@@ -114,6 +174,10 @@ class LDPlugin implements Plugin<Project> {
             println "ldTask config"
 
             task.doFirst {
+                println ">>>" + project.ldExtension.author
+                println ">>>" + project.ldExtension.time
+                println ">>>" + project.ldExtension.content
+
                 author = "leidong"
                 time = new Date().toString()
                 content = "This is content."
@@ -184,5 +248,20 @@ class LDPlugin implements Plugin<Project> {
                 }
             }
         })
+    }
+
+    /**
+     * 测试依赖
+     */
+    def testDependencyCheck() {
+        project.task("ldTestDependencyCheck", type: DependencyCheckTask) { task ->
+            doFirst {
+                LogUtils.printContent("DependencyCheck Task doFirst")
+                task.project = project
+            }
+            doLast {
+                LogUtils.printContent("DependencyCheck Task doLast")
+            }
+        }
     }
 }

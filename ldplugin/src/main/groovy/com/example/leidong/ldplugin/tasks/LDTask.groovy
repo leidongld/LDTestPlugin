@@ -17,6 +17,7 @@ class LDTask extends DefaultTask {
 
     LDTask() {
         setDescription("这是LDTask")
+        setGroup("leidong")
     }
 
     @TaskAction

@@ -1,7 +1,7 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion this.COMPILE_SDK_VERSION
     defaultConfig {
         applicationId "com.example.leidong.ldtest"
         minSdkVersion 19
@@ -27,9 +27,9 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
 }
 
-//apply plugin: 'com.plugin.ldplugin'
-//ldExtension {
-//    author = "leidong"
-//    time = new Date().toString()
-//    content = "The params are from ld extension."
-//}
+apply plugin: 'com.plugin.ldplugin'
+ldExtension {
+    author = "leidong"
+    time = new Date().toString()
+    content = "The params are from ld extension."
+}

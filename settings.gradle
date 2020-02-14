@@ -1,2 +1,9 @@
-include ':app', ':modulea', ':moduleb', ':ldplugin'
-rootProject.name='LDTest'
+rootProject.name = 'LDTest'
+include ':app', ':ldplugin'
+if ((hasProperty("includeModuleA")) && includeModuleA.toBoolean() == true) {
+    include ":modulea"
+}
+if ((hasProperty("includeModuleB")) && includeModuleB.toBoolean() == true) {
+    include ":moduleb"
+}
+

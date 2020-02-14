@@ -1,7 +1,8 @@
 apply plugin: 'com.android.library'
+//apply plugin: 'com.plugin.ldplugin'
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion this.COMPILE_SDK_VERSION
 
 
     defaultConfig {
