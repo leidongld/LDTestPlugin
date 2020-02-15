@@ -1,9 +1,12 @@
 package com.example.leidong.ldplugin
 
-
 import com.example.leidong.ldplugin.beans.TaskTimeBean
 import com.example.leidong.ldplugin.extensions.LDExtension
-import com.example.leidong.ldplugin.tasks.*
+import com.example.leidong.ldplugin.tasks.CheckActivitiesTask
+import com.example.leidong.ldplugin.tasks.DependencyCheckTask
+import com.example.leidong.ldplugin.tasks.LDTask
+import com.example.leidong.ldplugin.utils.CommonUtils
+import com.example.leidong.ldplugin.utils.FileUtils
 import com.example.leidong.ldplugin.utils.LogUtils
 import org.gradle.BuildListener
 import org.gradle.BuildResult
@@ -11,6 +14,8 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.execution.TaskExecutionListener
+import org.gradle.api.file.ConfigurableFileTree
+import org.gradle.api.file.FileVisitDetails
 import org.gradle.api.initialization.Settings
 import org.gradle.api.invocation.Gradle
 import org.gradle.api.tasks.TaskState
@@ -32,7 +37,8 @@ class LDPlugin implements Plugin<Project> {
         testProjectApi,
         testGetProperty,
         testPrintVariants,
-        testCheckAllActivities
+        testCheckAllActivities,
+        testApkMd5
     }
 
     @Override
@@ -65,11 +71,46 @@ class LDPlugin implements Plugin<Project> {
             case FunctionType.testCheckAllActivities:
                 testCheckAllActivities()
                 break
+            case FunctionType.testApkMd5:
+                testApkMd5()
+                break
             default:
                 break
         }
 
         LogUtils.printTitle("LDPlugin End")
+    }
+
+    def testApkMd5() {
+        project.afterEvaluate {
+            project.tasks.getByName("build") {
+                doLast {
+                    String buildPath = project.getBuildDir().absolutePath
+                    String apkPath = buildPath + File.separator + "outputs" + File.separator + "apk"
+                    println "apkPath:" + apkPath
+                    project.fileTree(apkPath) { ConfigurableFileTree tree ->
+                        tree.visit { FileVisitDetails details ->
+                            if (details.name.endsWith(".apk")) {
+                                String apkName = details.name
+                                String md5Name = apkName.replace("apk", "md5")
+                                println(apkName + "是一个apk")
+
+                                File apkFile = details.file
+                                println "apkFile.getParent() = " + apkFile.getParent()
+                                File md5File = new File(apkFile.getParent() + File.separator + md5Name)
+                                md5File.createNewFile()
+
+                                if (md5File.exists()) {
+                                    String md5 = CommonUtils.calculateMd5(apkFile)
+                                    println(details.name + "的md5：" + md5)
+                                    FileUtils.writeToFile(md5, md5File)
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -151,7 +192,7 @@ class LDPlugin implements Plugin<Project> {
      */
     def init(Project project) {
         this.project = project
-        this.type = FunctionType.testDependencyCheck
+        this.type = FunctionType.testApkMd5
     }
 
     /**
