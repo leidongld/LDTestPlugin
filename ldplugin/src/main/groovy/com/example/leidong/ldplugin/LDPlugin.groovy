@@ -3,8 +3,7 @@ package com.example.leidong.ldplugin
 
 import com.example.leidong.ldplugin.beans.TaskTimeBean
 import com.example.leidong.ldplugin.extensions.LDExtension
-import com.example.leidong.ldplugin.tasks.DependencyCheckTask
-import com.example.leidong.ldplugin.tasks.LDTask
+import com.example.leidong.ldplugin.tasks.*
 import com.example.leidong.ldplugin.utils.LogUtils
 import org.gradle.BuildListener
 import org.gradle.BuildResult
@@ -31,7 +30,9 @@ class LDPlugin implements Plugin<Project> {
         testListener,
         testDependencyCheck,
         testProjectApi,
-        testGetProperty
+        testGetProperty,
+        testPrintVariants,
+        testCheckAllActivities
     }
 
     @Override
@@ -58,11 +59,42 @@ class LDPlugin implements Plugin<Project> {
             case FunctionType.testGetProperty:
                 testGetProperty()
                 break
+            case FunctionType.testPrintVariants:
+                testPrintVariants()
+                break
+            case FunctionType.testCheckAllActivities:
+                testCheckAllActivities()
+                break
             default:
                 break
         }
 
         LogUtils.printTitle("LDPlugin End")
+    }
+
+    /**
+     * 查找所有的Activity并打印输出
+     */
+    def testCheckAllActivities() {
+        project.task("checkAllActivities", type: CheckActivitiesTask) { Task task ->
+            task.doFirst {
+                task.project = project
+            }
+        }
+    }
+
+    /**
+     * 打印所有的variant名称
+     *
+     * @return
+     */
+    def testPrintVariants() {
+        project.afterEvaluate {
+            project.android.applicationVariants.all { variant ->
+                def name = variant.name
+                println name
+            }
+        }
     }
 
     /**
@@ -119,7 +151,7 @@ class LDPlugin implements Plugin<Project> {
      */
     def init(Project project) {
         this.project = project
-        this.type = FunctionType.testExtensionAndTask
+        this.type = FunctionType.testDependencyCheck
     }
 
     /**

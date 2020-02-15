@@ -11,10 +11,23 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
+        debug {
+
+        }
+        sit {
+
+        }
+        uat {
+
+        }
+        pro {
+
+        }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
+
     }
 }
 
@@ -28,8 +41,9 @@ dependencies {
 }
 
 apply plugin: 'com.plugin.ldplugin'
-ldExtension {
-    author = "leidong"
-    time = new Date().toString()
-    content = "The params are from ld extension."
-}
+//ldExtension {
+//    author = "leidong"
+//    time = new Date().toString()
+//    content = "The params are from ld extension."
+//}
+

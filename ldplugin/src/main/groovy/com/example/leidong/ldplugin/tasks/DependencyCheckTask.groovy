@@ -1,8 +1,8 @@
 package com.example.leidong.ldplugin.tasks
 
-
 import org.gradle.api.DefaultTask
 import org.gradle.api.Project
+import org.gradle.api.artifacts.Configuration
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.TaskAction
 
@@ -21,11 +21,20 @@ class DependencyCheckTask extends DefaultTask {
             return
         }
 
-        project.allprojects.each { project ->
-            String name = project.getName()
-            project.dependencies.each { dependency ->
-                println "[" + name + "] " + dependency.toString()
+        project.getRootProject().subprojects.each { ele ->
+            String name = ele.getName()
+            println "模块${name}用到了这些依赖："
+            ele.configurations.each { Configuration configuration ->
+                configuration.resolutionStrategy {
+                    eachDependency {
+                        println
+                        it.requested.group + ":"
+                        it.requested.name + ":"
+                        it.requested.version
+                    }
+                }
             }
+
         }
     }
 }

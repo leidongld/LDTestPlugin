@@ -33,3 +33,13 @@ A
 gradle.properties,2\a\2afbb999f001938c88fa43fc2ef52abf0f8213e4
 @
 local.properties,0\7\0712df971a99ac4d2fccb8e0fb19f377f3374cca
+e
+5repo/com/plugin/ldplugin/1.0.0/ldplugin-1.0.0.jar.md5,1\a\1ab3cfd204cf5ef71ab5aa6aacb39d1ba01213e0
+f
+6repo/com/plugin/ldplugin/1.0.0/ldplugin-1.0.0.jar.sha1,e\1\e1d573bc613963a4aae63afefedf39a74cded274
+[
++repo/com/plugin/ldplugin/maven-metadata.xml,e\3\e367a38262d4df3c27016f2a839b641a01506f94
+_
+/repo/com/plugin/ldplugin/maven-metadata.xml.md5,2\6\2655b5fe61d4e9163f8f9ee4bc57bd51b70de196
+`
+0repo/com/plugin/ldplugin/maven-metadata.xml.sha1,7\a\7a2760f7b0a0b3e98ed4f9652586db24fc9e6686
